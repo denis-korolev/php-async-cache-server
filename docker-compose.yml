@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+
+    cache-app-cli:
+        build:
+            context: docker
+            dockerfile: development/php-cli/Dockerfile
+        tty: true
+        stdin_open: true
+        volumes:
+            - .:/app
+        ports:
+            - ${APP_PORT}:80
+        env_file:
+            - .env
