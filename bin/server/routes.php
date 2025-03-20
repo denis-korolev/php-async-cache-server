@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use PhpCache\DeleteAction;
-use PhpCache\GetAction;
-use PhpCache\IndexAction;
-use PhpCache\SetAction;
+use PhpCache\server\DeleteAction;
+use PhpCache\server\GetAction;
+use PhpCache\server\IndexAction;
+use PhpCache\server\SetAction;
 
 return [
     ['method' => 'GET', 'uri' => '/', 'action' => IndexAction::class],

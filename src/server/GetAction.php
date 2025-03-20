@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpCache;
+namespace PhpCache\server;
 
 use Amp\Cache\LocalCache;
 use Amp\Http\HttpStatus;

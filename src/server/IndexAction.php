@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace PhpCache;
+namespace PhpCache\server;
 
 use Amp\Cache\LocalCache;
+use Amp\Http\HttpStatus;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
-use Amp\Http\HttpStatus;
 
 final class IndexAction implements RequestHandler
 {
@@ -24,7 +24,7 @@ final class IndexAction implements RequestHandler
 
         return new Response(
             HttpStatus::OK,
-            ['content-type' => 'application/json'],
+            ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'],
             json_encode($data, JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         );
     }

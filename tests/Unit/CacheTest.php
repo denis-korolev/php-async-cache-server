@@ -27,7 +27,7 @@ class CacheTest extends TestCase
          * @var $logger \Monolog\Logger
          * @var $container \DI\Container
          */
-        [$server, $router, $errorHandler, $logger, $container] = require dirname(__DIR__, 2) . '/bin/init.php';
+        [$server, $router, $errorHandler, $logger, $container] = require dirname(__DIR__, 2) . '/bin/server/init.php';
 
         $this->router = $router;
         $this->request = new Request(

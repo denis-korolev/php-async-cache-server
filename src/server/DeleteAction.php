@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpCache;
+namespace PhpCache\server;
 
 use Amp\Cache\LocalCache;
 use Amp\Http\HttpStatus;
@@ -11,7 +11,7 @@ use Amp\Http\Server\RequestHandler;
 use Amp\Http\Server\Response;
 use Amp\Http\Server\Router;
 
-final class SetAction implements RequestHandler
+final class DeleteAction implements RequestHandler
 {
     public function __construct(private LocalCache $cache)
     {
@@ -20,10 +20,12 @@ final class SetAction implements RequestHandler
     public function handleRequest(Request $request): Response
     {
         $args = $request->getAttribute(Router::class);
-        $ttl = $request->getQueryParameter('ttl');
-
-        $body = $request->getBody();
-        $this->cache->set($args['key'], $body->buffer(), $ttl ? (int)$ttl : null);
+        if (!$this->cache->delete($args['key'])) {
+            return new Response(
+                HttpStatus::NOT_FOUND,
+                ['content-type' => 'text/plain']
+            );
+        }
 
         return new Response(
             HttpStatus::OK,

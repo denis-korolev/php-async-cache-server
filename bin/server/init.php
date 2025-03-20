@@ -13,7 +13,7 @@ use Amp\Socket\InternetAddress;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-require dirname(__DIR__) . "/vendor/autoload.php";
+require dirname(__DIR__) . "../../vendor/autoload.php";
 
 $containerBuilder = new ContainerBuilder();
 // on production
