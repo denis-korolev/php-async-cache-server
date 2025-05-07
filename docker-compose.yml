@@ -10,5 +10,7 @@ services:
         ports:
             - ${GATEWAY_PORT}:777
             - ${SERVER_PORT}:778
+            - 779:779
+            - 780:780
         env_file:
             - .env

@@ -24,6 +24,16 @@
 - `PUT /{key}` - записать значение по ключу (проксируется на один из кеш-серверов)
 - `DELETE /{key}` - удалить значение по ключу (проксируется на один из кеш-серверов)
 
+## API Документация
+
+API шлюза документировано с использованием OpenAPI/Swagger. Для генерации актуальной схемы с учетом настроек окружения используйте скрипт:
+
+```bash
+php bin/generate-swagger.php
+```
+
+Скрипт создаст файл `swagger.generated.yaml` с актуальными настройками порта из переменной окружения `GATEWAY_PORT`.
+
 ## Запуск системы
 
 1. Скопируйте файл конфигурации:
@@ -31,23 +41,38 @@
 cp .env-example .env
 ```
 
-2. Настройте переменные окружения в `.env`:
-```env
-SERVER_PORT=778        # Порт кеш-сервера
-GATEWAY_PORT=777       # Порт шлюза
-```
-
-3. Запустите шлюз:
+2. Настройте переменные окружения в файле `.env`:
 ```bash
-php bin/gateway/app.php
+SERVER_PORT=80    # Порт для кеш-сервера
+GATEWAY_PORT=81   # Порт для шлюза
 ```
 
-4. Запустите один или несколько кеш-серверов:
+3. Запустите систему через Docker Compose:
 ```bash
-php bin/server/app.php
+docker-compose up -d
 ```
 
-Кеш-серверы автоматически зарегистрируются в шлюзе при запуске.
+## Тестирование
+
+Для тестирования API можно использовать сгенерированную Swagger схему с помощью инструментов:
+- Swagger UI
+- Postman
+- curl
+
+Пример запроса к API:
+```bash
+# Получение списка серверов
+curl http://localhost:81/
+
+# Регистрация нового сервера
+curl -X PUT http://localhost:81/register -H "Content-Type: application/json" -d '{"ip":"http://localhost:80"}'
+
+# Сохранение значения
+curl -X PUT http://localhost:81/test-key -d "test-value"
+
+# Получение значения
+curl http://localhost:81/test-key
+```
 
 ## Особенности работы
 
@@ -82,6 +107,17 @@ curl http://localhost:80/my-key
 curl -X DELETE http://localhost:80/my-key
 ```
 
-TODO
-1. Запуск по указанному порту (передавать в консоли)
-2. Сделать масштабирование под несколько инстансов серверов
+
+### Запускаем сначала шлюз, потом сервер
+
+### Запуск шлюза
+```php
+php bin/gateway/app.php
+```
+
+### Запуск сервера
+```php
+php bin/server/app.php --port 778
+php bin/server/app.php --port 779
+php bin/server/app.php --port 780
+```

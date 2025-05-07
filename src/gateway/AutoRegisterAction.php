@@ -35,7 +35,7 @@ final class AutoRegisterAction implements RequestHandler
 
         // Проверяем доступность сервера
         try {
-            $status = $this->externalHttpRequest->checkClient('http://'.$ip);
+            $status = $this->externalHttpRequest->checkClient('http://' . $ip);
 
             if ($status !== HttpStatus::OK) {
                 return new Response(
