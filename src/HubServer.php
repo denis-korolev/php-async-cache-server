@@ -1,4 +1,5 @@
 <?php
+
 /**
  * What this program does is accept multiple connections and forward
  * each incoming message to the rest of the connections.
@@ -14,7 +15,7 @@ use ThenLabs\SocketServer\SocketServer;
 class HubServer extends SocketServer
 {
     /** @var \ThenLabs\SocketServer\Connection[] */
-    protected  array $connections = [];
+    protected array $connections = [];
 
     public function onConnection(ConnectionEvent $event): void
     {

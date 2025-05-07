@@ -6,40 +6,61 @@ namespace Test\Unit;
 
 use Amp\ByteStream\Payload;
 use Amp\Http\HttpStatus;
+use Amp\Http\Server\DefaultErrorHandler;
 use Amp\Http\Server\Driver\Client;
 use Amp\Http\Server\Request;
 use Amp\Http\Server\Router;
+use Amp\Http\Server\SocketHttpServer;
+use Amp\Socket\InternetAddress;
+use DI\Container;
 use League\Uri\Http;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
 class CacheTest extends TestCase
 {
     private Router $router;
+    private array $routes;
     private Request $request;
-
+    private SocketHttpServer $server;
+    private DefaultErrorHandler $errorHandler;
+    private Logger $logger;
+    private Container $container;
     public function setUp(): void
     {
 
         /**
-         * @var $server \Amp\Http\Server\SocketHttpServer
-         * @var $router \Amp\Http\Server\Router
-         * @var $errorHandler \Amp\Http\Server\DefaultErrorHandler
-         * @var $logger \Monolog\Logger
-         * @var $container \DI\Container
+         * @var $server SocketHttpServer
+         * @var $router Router
+         * @var $routers array
+         * @var $errorHandler DefaultErrorHandler
+         * @var $logger Logger
+         * @var $container Container
          */
-        [$server, $router, $errorHandler, $logger, $container] = require dirname(__DIR__, 2) . '/bin/server/init.php';
+        [$server, $routes, $router, $errorHandler, $logger, $container] = require dirname(__DIR__, 2) . '/bin/server/init.php';
 
-        $this->router = $router;
         $this->request = new Request(
             $this->createMock(Client::class),
             'GET',
             Http::new('/')
         );
-        $server->start($router, $errorHandler);
+
+        $this->router = $router;
+        $this->routes = $routes;
+        $this->logger = $logger;
+        $this->container = $container;
+        $this->errorHandler = $errorHandler;
+        $this->server = $server;
     }
 
     public function testServer(): void
     {
+        loadRoutes($this->routes, $this->router, $this->container);
+
+        $this->server->expose(new InternetAddress("[::]", 11));
+        $this->server->expose(new InternetAddress("0.0.0.0", 11));
+        $this->server->start($this->router, $this->errorHandler);
+
         // проверяем, что ничего нет в кеше
         $payload = new Payload($this->router->handleRequest($this->request)->getBody());
         self::assertEquals('[]', $payload->buffer());

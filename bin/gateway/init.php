@@ -13,11 +13,14 @@ use Amp\Socket\InternetAddress;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-require dirname(__DIR__) . "../../vendor/autoload.php";
+require dirname(__DIR__) . "/../vendor/autoload.php";
 
 $containerBuilder = new ContainerBuilder();
 // on production
 //$containerBuilder->enableCompilation(dirname(__DIR__) . '/var/cache');
+
+// Загружаем конфигурацию
+$containerBuilder->addDefinitions(require dirname(__DIR__) . "/../config/gateway.php");
 
 $container = $containerBuilder->build();
 
@@ -36,17 +39,6 @@ $server->expose(new InternetAddress("[::]", 81));
 $errorHandler = new DefaultErrorHandler();
 
 $router = new Router($server, $logger, $errorHandler);
-
 $routes = require "routes.php";
 
-foreach ($routes as $i => $route) {
-    $router->addRoute(
-        $route['method'],
-        $route['uri'],
-        $container->get($route['action'])
-    );
-}
-
-
-
-return [$server,$router, $errorHandler, $logger, $container];
+return [$server, $routes, $router, $errorHandler, $logger, $container];

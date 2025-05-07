@@ -27,10 +27,13 @@ final class UnregisterAction implements RequestHandler
             /** @var string[] $registeredList */
             $registeredList = ($this->cache->get('registered') === null ? [] : json_decode($this->cache->get('registered'), true));
             unset($registeredList[$ip]);
-            $this->cache->set('registered', json_encode(
-                $registeredList,
-                JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-            ));
+            $this->cache->set(
+                'registered',
+                json_encode(
+                    $registeredList,
+                    JSON_THROW_ON_ERROR | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+                )
+            );
         }
 
         return new Response(
