@@ -13,7 +13,7 @@ class IpHelper
     {
         $opts = getopt('p:', ['port:']);
 
-        $port =  $opts['p'] ?? ($opts['port'] ?? null);
+        $port = $opts['p'] ?? ($opts['port'] ?? null);
         if ($port === null) {
             throw new \Exception('Не передан обязательный параметр --port');
         }

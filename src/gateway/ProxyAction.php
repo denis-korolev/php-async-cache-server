@@ -71,7 +71,6 @@ final class ProxyAction implements RequestHandler
                 $responseBody
             );
         } catch (\Exception $e) {
-
             // todo логирование текста эксепшена
             return new Response(
                 HttpStatus::BAD_GATEWAY,

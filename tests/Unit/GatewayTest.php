@@ -52,7 +52,7 @@ class GatewayTest extends TestCase
         );
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         $this->server->stop();
     }
