@@ -13,11 +13,14 @@ use Amp\Socket\InternetAddress;
 use Monolog\Logger;
 use Monolog\Processor\PsrLogMessageProcessor;
 
-require dirname(__DIR__) . "/vendor/autoload.php";
+require dirname(__DIR__) . "/../vendor/autoload.php";
 
 $containerBuilder = new ContainerBuilder();
 // on production
 //$containerBuilder->enableCompilation(dirname(__DIR__) . '/var/cache');
+
+// Загружаем конфигурацию
+$containerBuilder->addDefinitions(require dirname(__DIR__) . "/../config/gateway.php");
 
 $container = $containerBuilder->build();
 
@@ -25,28 +28,21 @@ $logHandler = new StreamHandler(ByteStream\getStdout());
 $logHandler->pushProcessor(new PsrLogMessageProcessor());
 $logHandler->setFormatter(new ConsoleFormatter());
 
-$logger = new Logger('server');
+$logger = new Logger('gateway_server');
 $logger->pushHandler($logHandler);
 
 $server = SocketHttpServer::createForDirectAccess($logger);
+$port = getenv('GATEWAY_PORT');
+if (!$port) {
+    throw new Exception('Не указан GATEWAY_PORT');
+}
 
-$server->expose(new InternetAddress("0.0.0.0", 80));
-$server->expose(new InternetAddress("[::]", 80));
+$server->expose(new InternetAddress("0.0.0.0", (int)$port));
+$server->expose(new InternetAddress("[::]", (int)$port));
 
 $errorHandler = new DefaultErrorHandler();
 
 $router = new Router($server, $logger, $errorHandler);
-
 $routes = require "routes.php";
 
-foreach ($routes as $i => $route) {
-    $router->addRoute(
-        $route['method'],
-        $route['uri'],
-        $container->get($route['action'])
-    );
-}
-
-
-
-return [$server,$router, $errorHandler, $logger, $container];
+return [$server, $routes, $router, $errorHandler, $logger, $container];

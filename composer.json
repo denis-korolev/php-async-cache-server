@@ -20,16 +20,19 @@
   "require": {
     "php": "^8.2",
     "ext-pcntl": "*",
+    "ext-sockets": "*",
     "amphp/amp": "^3.0",
     "amphp/cache": "2.0",
     "amphp/http": "^2.1",
+    "amphp/http-client": "^5.3",
     "amphp/http-server": "^3.2",
     "amphp/http-server-router": "^2.0",
     "amphp/log": "^2.0",
     "amphp/parser": "^1.1",
     "amphp/socket": "^2.2",
     "php-di/php-di": "^7.0",
-    "revolt/event-loop": "^1.0"
+    "revolt/event-loop": "^1.0",
+    "thenlabs/socket-server": "^1.1"
   },
   "require-dev": {
     "overtrue/phplint": "^2.0",
@@ -40,7 +43,10 @@
   "autoload": {
     "psr-4": {
       "PhpCache\\": "src/"
-    }
+    },
+    "files": [
+      "src/functions.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": {

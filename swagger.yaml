@@ -1,0 +1,222 @@
+openapi: 3.0.0
+info:
+  title: Cache Gateway API
+  description: API for managing distributed cache servers and proxying cache operations
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:${GATEWAY_PORT}
+    description: Local development server
+    variables:
+      GATEWAY_PORT:
+        default: "81"
+        description: Gateway server port from environment variable
+
+paths:
+  /:
+    get:
+      summary: Get list of registered cache servers
+      description: Returns a list of all registered cache servers with their details
+      responses:
+        '200':
+          description: List of registered servers
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    ip:
+                      type: string
+                      description: Server IP address and port
+                    description:
+                      type: string
+                      description: Server description
+                    registered_at:
+                      type: string
+                      format: date-time
+                      description: Registration timestamp
+                    status:
+                      type: string
+                      description: Server status
+
+  /register:
+    put:
+      summary: Register a cache server manually
+      description: Manually register a new cache server in the gateway
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+              properties:
+                ip:
+                  type: string
+                  description: Server IP address and port
+      responses:
+        '200':
+          description: Server registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+
+    delete:
+      summary: Unregister a cache server
+      description: Remove a cache server from the gateway
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+              properties:
+                ip:
+                  type: string
+                  description: Server IP address and port
+      responses:
+        '200':
+          description: Server unregistered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+
+  /auto-register:
+    post:
+      summary: Auto-register a cache server
+      description: Automatically register a cache server with availability check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - ip
+              properties:
+                ip:
+                  type: string
+                  description: Server IP address and port
+      responses:
+        '200':
+          description: Server registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Cache server registered successfully
+                  server:
+                    type: object
+                    properties:
+                      ip:
+                        type: string
+                      description:
+                        type: string
+                      registered_at:
+                        type: string
+                        format: date-time
+                      status:
+                        type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: IP address is required
+
+  /{key}:
+    parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Cache key
+
+    get:
+      summary: Get value by key
+      description: Retrieve a value from cache by key (proxied to cache server)
+      responses:
+        '200':
+          description: Value retrieved successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Key not found
+        '503':
+          description: No cache servers available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No cache servers available
+
+    put:
+      summary: Set value by key
+      description: Store a value in cache by key (proxied to cache server)
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Value stored successfully
+        '503':
+          description: No cache servers available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No cache servers available
+
+    delete:
+      summary: Delete value by key
+      description: Remove a value from cache by key (proxied to cache server)
+      responses:
+        '200':
+          description: Value deleted successfully
+        '503':
+          description: No cache servers available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: No cache servers available 

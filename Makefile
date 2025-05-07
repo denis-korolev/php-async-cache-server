@@ -25,22 +25,22 @@ lint: app-lint
 analyze: app-analyze
 
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 
 docker-down:
-	docker-compose down --remove-orphans
+	docker compose down --remove-orphans
 
 docker-down-clear:
-	docker-compose down -v --remove-orphans
+	docker compose down -v --remove-orphans
 
 docker-pull:
-	docker-compose pull --include-deps
+	docker compose pull --include-deps
 
 docker-build:
-	docker-compose build
+	docker compose build
 
 app-composer-install:
-	docker-compose run --rm cache-app-cli composer install
+	docker compose run --rm cache-app-cli composer install
 
 app-init: permissions app-cache-clear app-composer-install
 
@@ -51,14 +51,14 @@ permissions:
 	docker run --rm -v ${PWD}/:/app -w /app alpine chmod 777 var/cache var/test
 
 app-test:
-	docker-compose run --rm cache-app-cli composer test
+	docker compose run --rm cache-app-cli composer test
 
 app-lint:
-	docker-compose run --rm cache-app-cli composer lint
-	docker-compose run --rm cache-app-cli composer cs-fix
+	docker compose run --rm cache-app-cli composer lint
+	docker compose run --rm cache-app-cli composer cs-fix
 
 app-analyze:
-	docker-compose run --rm cache-app-cli composer psalm
+	docker compose run --rm cache-app-cli composer psalm
 
 shell-php:
-	docker-compose exec cache-app-cli bash
+	docker compose exec cache-app-cli bash

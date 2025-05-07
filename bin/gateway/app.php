@@ -2,14 +2,17 @@
 
 /**
  * @var $server \Amp\Http\Server\SocketHttpServer
+ * @var $routes array
  * @var $router \Amp\Http\Server\Router
  * @var $errorHandler \Amp\Http\Server\DefaultErrorHandler
  * @var $logger Monolog\Logger
  * @var $container \DI\Container
  */
-[$server, $router, $errorHandler, $logger, $container] = require "init.php";
+[$server, $routes, $router, $errorHandler, $logger, $container] = require "init.php";
 
 use function Amp\trapSignal;
+
+loadRoutes($routes, $router, $container);
 
 $server->start($router, $errorHandler);
 
