@@ -32,9 +32,13 @@ $logger = new Logger('gateway_server');
 $logger->pushHandler($logHandler);
 
 $server = SocketHttpServer::createForDirectAccess($logger);
+$port = getenv('GATEWAY_PORT');
+if (!$port) {
+    throw new Exception('Не указан GATEWAY_PORT');
+}
 
-$server->expose(new InternetAddress("0.0.0.0", 81));
-$server->expose(new InternetAddress("[::]", 81));
+$server->expose(new InternetAddress("0.0.0.0", (int)$port));
+$server->expose(new InternetAddress("[::]", (int)$port));
 
 $errorHandler = new DefaultErrorHandler();
 

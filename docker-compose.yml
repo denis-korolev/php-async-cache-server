@@ -8,7 +8,7 @@ services:
         volumes:
             - .:/app
         ports:
-            - ${SERVER_PORT}:80
-            - ${GATEWAY_PORT}:81
+            - ${GATEWAY_PORT}:777
+            - ${SERVER_PORT}:778
         env_file:
             - .env

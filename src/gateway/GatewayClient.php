@@ -61,7 +61,7 @@ class GatewayClient
             }
 
             $this->logger->error(
-                'Failed to register with gateway',
+                'Failed to register with gateway ',
                 [
                     'status' => $response->getStatus(),
                     'body' => $response->getBody()->buffer()

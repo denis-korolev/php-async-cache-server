@@ -55,7 +55,7 @@ final class ProxyAction implements RequestHandler
 
         try {
             // Создаем запрос к выбранному серверу
-            $clientRequest = new ClientRequest($serverUrl, $method);
+            $clientRequest = new ClientRequest('http://' . $serverUrl, $method);
             if (!empty($body)) {
                 $clientRequest->setBody($body);
             }

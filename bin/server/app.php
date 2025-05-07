@@ -31,31 +31,36 @@ $gatewayClient = $container->get(GatewayClient::class);
 
 $server->onStart(
     function () use ($gatewayClient, $address, $logger) {
-        $logger->info('Пытаемся зарегистрироваться в шлюзе');
 
-        $maxRetries = 5;
-        $retryDelay = 2; // секунды
+        Amp\async(
+            function () use ($gatewayClient, $address, $logger) {
+                $logger->info('Пытаемся зарегистрироваться в шлюзе');
 
-        for ($i = 0; $i < $maxRetries; $i++) {
-            if ($gatewayClient->register($address)) {
-                $logger->info('Successfully registered with gateway');
-                break;
-            }
+                $maxRetries = 5;
+                $retryDelay = 2; // секунды
 
-            if ($i < $maxRetries - 1) {
-                $logger->warning("Failed to register with gateway, retrying in {$retryDelay} seconds...");
-                sleep($retryDelay);
-            } else {
-                $logger->error('Failed to register with gateway after ' . $maxRetries . ' attempts');
-                throw new Exception('Failed to register with gateway after ' . $maxRetries . ' attempts');
-            }
-        }
+                for ($i = 0; $i < $maxRetries; $i++) {
+                    if ($gatewayClient->register($address)) {
+                        $logger->info('Successfully registered with gateway');
+                        break;
+                    }
 
-    // Регистрируем обработчик для корректного отключения от шлюза при завершении работы
-        register_shutdown_function(
-            function () use ($gatewayClient, $logger, $address) {
-                $gatewayClient->unregister($address);
-                $logger->info('Unregistered from gateway');
+                    if ($i < $maxRetries - 1) {
+                        $logger->warning("Failed to register with gateway, retrying in {$retryDelay} seconds...");
+                        sleep($retryDelay);
+                    } else {
+                        $logger->error('Failed to register with gateway after ' . $maxRetries . ' attempts');
+//                        throw new Exception('Failed to register with gateway after ' . $maxRetries . ' attempts');
+                    }
+                }
+
+            // Регистрируем обработчик для корректного отключения от шлюза при завершении работы
+                register_shutdown_function(
+                    function () use ($gatewayClient, $logger, $address) {
+                        $gatewayClient->unregister($address);
+                        $logger->info('Unregistered from gateway');
+                    }
+                );
             }
         );
     }
